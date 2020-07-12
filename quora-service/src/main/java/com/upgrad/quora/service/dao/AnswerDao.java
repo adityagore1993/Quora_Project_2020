@@ -26,6 +26,14 @@ public class AnswerDao {
         }
     }
 
+    public AnswerEntity getAnswerByUuid(final String answerUuid) {
+        try{
+            return entityManager.createNamedQuery("AnswerByUuid", AnswerEntity.class).setParameter("answerUuid", answerUuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
     public AnswerEntity updateAnswer(AnswerEntity updatedAnswer) {
         return entityManager.merge(updatedAnswer);
     }

@@ -31,22 +31,51 @@ public class AnswerController {
             @RequestHeader("authorization") final String authorization
     ) throws InvalidQuestionException, AuthorizationFailedException {
 
-        String[] authorizationSplitText = authorization.split("Bearer ");
-        if(authorizationSplitText.length != 2) {
-            //throw bad request error?
-        }
+        String bearerToken = extractBearerToken(authorization);
 
         final AnswerEntity newAnswer = new AnswerEntity();
         newAnswer.setAnswer(newAnswerRequest.getAnswer());
         newAnswer.setUuid(UUID.randomUUID().toString());
         newAnswer.setCreatedDate(ZonedDateTime.now());
 
-        final AnswerEntity createdAnswer = service.addNewAnswer(questionUUID, newAnswer, authorizationSplitText[2]);
+        final AnswerEntity createdAnswer = service.addNewAnswer(questionUUID, newAnswer, bearerToken);
 
-        return new ResponseEntity<AnswerResponse>(
+        return new ResponseEntity<>(
                 new AnswerResponse().id(createdAnswer.getUuid()).status("ANSWER CREATED"),
                 HttpStatus.CREATED
         );
 
     }
+
+    @RequestMapping(value = "/answer/edit/{answerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerEditResponse> editAnswer(
+            final AnswerEditRequest editRequest,
+            @RequestParam("answerId") final String answerUuid,
+            @RequestHeader("authorization") final String authorization
+    ) throws AuthorizationFailedException, AnswerNotFoundException {
+        String bearerToken = extractBearerToken(authorization);
+
+        //return value not needed
+        final AnswerEntity answerAfterEdit = service.editAnswer(answerUuid, editRequest.getContent(), bearerToken);
+
+        return new ResponseEntity<>(
+                new AnswerEditResponse().id(answerAfterEdit.getUuid()).status("ANSWER EDITED"),
+                HttpStatus.OK
+        );
+
+    }
+
+    private String extractBearerToken(String authorizationCode) {
+
+        try {
+
+            return authorizationCode.split("Bearer ")[1]; // will throw Index OOB exception
+
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException aib) {
+            // missing authCode
+            return "";
+        }
+
+    }
+
 }
