@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.service.OAuth;
 
 import java.awt.*;
 import java.time.ZonedDateTime;
@@ -50,7 +51,7 @@ public class AnswerController {
     @RequestMapping(value = "/answer/edit/{answerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AnswerEditResponse> editAnswer(
             final AnswerEditRequest editRequest,
-            @RequestParam("answerId") final String answerUuid,
+            @PathVariable("answerId") final String answerUuid,
             @RequestHeader("authorization") final String authorization
     ) throws AuthorizationFailedException, AnswerNotFoundException {
         String bearerToken = extractBearerToken(authorization);
@@ -60,6 +61,22 @@ public class AnswerController {
 
         return new ResponseEntity<>(
                 new AnswerEditResponse().id(answerAfterEdit.getUuid()).status("ANSWER EDITED"),
+                HttpStatus.OK
+        );
+
+    }
+
+    @RequestMapping(value = "/answer/delete/{answerId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerDeleteResponse> deleteAnswer(
+            @PathVariable("answerId") final String answerUuid,
+            @RequestHeader("authorization") final String authorization
+    ) throws AuthorizationFailedException, AnswerNotFoundException {
+        String bearerToken = extractBearerToken(authorization);
+
+        Boolean result = service.deleteAnswer(answerUuid, bearerToken);
+
+        return new ResponseEntity<>(
+                new AnswerDeleteResponse().id(answerUuid).status("ANSWER DELETED"),
                 HttpStatus.OK
         );
 

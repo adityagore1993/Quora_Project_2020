@@ -38,4 +38,10 @@ public class AnswerDao {
         return entityManager.merge(updatedAnswer);
     }
 
+    public Boolean deleteAnswer(AnswerEntity answerToDelete) {
+        // one record deleted
+        return 1 == entityManager.createNamedQuery("DeleteAnswerByUuid").setParameter("uuid", answerToDelete.getUuid()).executeUpdate();
+
+    }
+
 }

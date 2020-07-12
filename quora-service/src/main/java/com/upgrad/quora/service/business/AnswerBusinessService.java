@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
@@ -18,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AnswerBusinessService {
+
+    final static String ADMIN_KEY = "admin";
+
     @Autowired
     AnswerDao answerDao;
 
@@ -46,6 +50,7 @@ public class AnswerBusinessService {
 
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity editAnswer(
             final String answerUuid, final String content, final String authorization
     ) throws AnswerNotFoundException, AuthorizationFailedException {
@@ -70,6 +75,34 @@ public class AnswerBusinessService {
         answerForEdit.setAnswer(content);
 
         return answerDao.updateAnswer(answerForEdit);
+
+    }
+
+    public Boolean deleteAnswer(
+            final String answerUuid, final String authCode
+    ) throws AnswerNotFoundException, AuthorizationFailedException {
+
+        AnswerEntity answerToDelete = answerDao.getAnswerByUuid(answerUuid);
+        if(answerToDelete == null) {
+            throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
+        }
+
+        // Authority check
+        // may throw ATHR-001 or ATHR-002
+        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authCode, ActionType.EDIT_ANSWER);
+
+        UserEntity currentUser = authToken.getUser();
+
+        UserEntity recordOwner = answerToDelete.getUser();
+
+        if(
+                currentUser.getUuid().equals(recordOwner.getUuid()) ||
+                        ADMIN_KEY.equals(currentUser.getRole())
+        ) {
+            return answerDao.deleteAnswer(answerToDelete);
+        } else {
+            throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
+        }
 
     }
 
