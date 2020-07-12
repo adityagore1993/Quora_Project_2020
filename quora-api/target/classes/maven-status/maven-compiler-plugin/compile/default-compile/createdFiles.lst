@@ -2,6 +2,7 @@ com\upgrad\quora\api\model\UserDeleteResponse.class
 io\swagger\configuration\HomeController.class
 com\upgrad\quora\api\model\AnswerResponse.class
 com\upgrad\quora\api\model\AnswerDetailsResponse.class
+com\upgrad\quora\api\controller\CommonController.class
 io\swagger\api\ApiResponseMessage.class
 com\upgrad\quora\api\QuoraApiApplication.class
 com\upgrad\quora\api\model\QuestionEditResponse.class

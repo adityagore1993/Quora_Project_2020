@@ -16,3 +16,4 @@ com\upgrad\quora\service\exception\AuthenticationFailedException.class
 com\upgrad\quora\service\business\SignUpBusinessService.class
 com\upgrad\quora\service\dao\UserDao.class
 com\upgrad\quora\service\exception\SignUpRestrictedException.class
+com\upgrad\quora\service\business\UserProfileService.class
