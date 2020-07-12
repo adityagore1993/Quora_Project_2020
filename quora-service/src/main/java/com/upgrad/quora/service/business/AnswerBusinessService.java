@@ -5,13 +5,12 @@ import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.AnswerEntity;
-import com.upgrad.quora.service.entity.Question;
+import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
-import com.upgrad.quora.service.type.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,7 +36,7 @@ public class AnswerBusinessService {
     public AnswerEntity addNewAnswer(String questionUuid, AnswerEntity newAnswer, final String authorizationToken) throws InvalidQuestionException, AuthorizationFailedException {
 
         //question check
-        Question question = questionDao.getQuestion(questionUuid);
+        QuestionEntity question = questionDao.getQuestion(questionUuid);
         if(question == null) {
             throw new InvalidQuestionException("QUES-001", "The question entered is invalid");
         }
@@ -112,7 +111,7 @@ public class AnswerBusinessService {
             final String uuid, final String authCode
     ) throws AuthorizationFailedException, InvalidQuestionException{
 
-        Question searchedQuestion = questionDao.getQuestion(uuid);
+        QuestionEntity searchedQuestion = questionDao.getQuestion(uuid);
         if(searchedQuestion == null) {
             throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
         }
