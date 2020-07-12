@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class AnswerBusinessService {
 
@@ -89,7 +91,7 @@ public class AnswerBusinessService {
 
         // Authority check
         // may throw ATHR-001 or ATHR-002
-        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authCode, ActionType.EDIT_ANSWER);
+        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authCode, ActionType.DELETE_ANSWER);
 
         UserEntity currentUser = authToken.getUser();
 
@@ -103,6 +105,23 @@ public class AnswerBusinessService {
         } else {
             throw new AuthorizationFailedException("ATHR-003", "Only the answer owner or admin can delete the answer");
         }
+
+    }
+
+    public List<AnswerEntity> getAllAnswersByQuestionUuid(
+            final String uuid, final String authCode
+    ) throws AuthorizationFailedException, InvalidQuestionException{
+
+        Question searchedQuestion = questionDao.getQuestion(uuid);
+        if(searchedQuestion == null) {
+            throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
+        }
+
+        // Authority check
+        // may throw ATHR-001 or ATHR-002
+        userDao.isValidActiveAuthToken(authCode, ActionType.GET_ALL_ANSWER_TO_QUESTION);
+
+        return answerDao.getAllAnswersByQuestionUuid(searchedQuestion.getId());
 
     }
 

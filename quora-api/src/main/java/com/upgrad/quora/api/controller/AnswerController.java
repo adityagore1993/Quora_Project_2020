@@ -11,10 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.service.OAuth;
 
-import java.awt.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,6 +80,33 @@ public class AnswerController {
         );
 
     }
+
+
+    @RequestMapping(value = "/answer/all/{questionId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion(
+            @PathVariable("questionId") final String questionId,
+            @RequestHeader("authorization") final String authorization
+    ) throws AuthorizationFailedException, InvalidQuestionException {
+
+        String bearerToken = extractBearerToken(authorization);
+
+        List<AnswerEntity> listOfAnswers = service.getAllAnswersByQuestionUuid(questionId, authorization);
+
+        List<AnswerDetailsResponse> listOfResult = new ArrayList<AnswerDetailsResponse>();
+
+        for(AnswerEntity eachAnswer: listOfAnswers) {
+            listOfResult.add(
+                    new AnswerDetailsResponse().id(eachAnswer.getUuid()).questionContent(eachAnswer.getQuestion().getContent()).answerContent(eachAnswer.getAnswer())
+            );
+        }
+
+        return new ResponseEntity<>(
+                listOfResult,
+                HttpStatus.OK
+        );
+
+    }
+
 
     private String extractBearerToken(String authorizationCode) {
 
