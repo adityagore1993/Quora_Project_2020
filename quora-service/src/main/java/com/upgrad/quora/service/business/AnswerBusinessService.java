@@ -1,6 +1,5 @@
 package com.upgrad.quora.service.business;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
@@ -35,6 +34,14 @@ public class AnswerBusinessService {
     @Transactional(propagation = Propagation.REQUIRED)
     public AnswerEntity addNewAnswer(String questionUuid, AnswerEntity newAnswer, final String authorizationToken) throws InvalidQuestionException, AuthorizationFailedException {
 
+        // Authority check
+        UserAuthTokenEntity authToken = userDao.queryAuthToken(authorizationToken);
+        if(authToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else if(authToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
+        }
+
         //question check
         QuestionEntity question = questionDao.getQuestion(questionUuid);
         if(question == null) {
@@ -43,8 +50,6 @@ public class AnswerBusinessService {
 
         newAnswer.setQuestion(question);
 
-        // Authority check
-        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authorizationToken, ActionType.CREATE_ANSWER);
         newAnswer.setUser(authToken.getUser());
 
         return answerDao.createAnswer(newAnswer);
@@ -56,14 +61,19 @@ public class AnswerBusinessService {
             final String answerUuid, final String content, final String authorization
     ) throws AnswerNotFoundException, AuthorizationFailedException {
 
-        AnswerEntity answerForEdit = answerDao.getAnswerByUuid(answerUuid);
-        if(answerForEdit == null) {
-            throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
-        }
-
         // Authority check
         // may throw ATHR-001 or ATHR-002
-        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authorization, ActionType.EDIT_ANSWER);
+        UserAuthTokenEntity authToken = userDao.queryAuthToken(authorization);
+        if(authToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else if(authToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to edit an answer");
+        }
+
+        AnswerEntity answerForEdit = answerDao.getAnswerByUuid(answerUuid);
+        if(answerForEdit == null) {
+            throw new AnswerNotFoundException("ANS-001", "User is signed out.Sign in first to post an answer");
+        }
 
         UserEntity currentUser = authToken.getUser();
 
@@ -83,14 +93,19 @@ public class AnswerBusinessService {
             final String answerUuid, final String authCode
     ) throws AnswerNotFoundException, AuthorizationFailedException {
 
+        // Authority check
+        // may throw ATHR-001 or ATHR-002
+        UserAuthTokenEntity authToken = userDao.queryAuthToken(authCode);
+        if(authToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else if(authToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to delete an answer");
+        }
+
         AnswerEntity answerToDelete = answerDao.getAnswerByUuid(answerUuid);
         if(answerToDelete == null) {
             throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
         }
-
-        // Authority check
-        // may throw ATHR-001 or ATHR-002
-        UserAuthTokenEntity authToken = userDao.isValidActiveAuthToken(authCode, ActionType.DELETE_ANSWER);
 
         UserEntity currentUser = authToken.getUser();
 
@@ -111,14 +126,19 @@ public class AnswerBusinessService {
             final String uuid, final String authCode
     ) throws AuthorizationFailedException, InvalidQuestionException{
 
+        // Authority check
+        // may throw ATHR-001 or ATHR-002
+        UserAuthTokenEntity authToken = userDao.queryAuthToken(authCode);
+        if(authToken == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else if(authToken.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get the answers");
+        }
+
         QuestionEntity searchedQuestion = questionDao.getQuestion(uuid);
         if(searchedQuestion == null) {
             throw new InvalidQuestionException("QUES-001", "The question with entered uuid whose details are to be seen does not exist");
         }
-
-        // Authority check
-        // may throw ATHR-001 or ATHR-002
-        userDao.isValidActiveAuthToken(authCode, ActionType.GET_ALL_ANSWER_TO_QUESTION);
 
         return answerDao.getAllAnswersByQuestionUuid(searchedQuestion.getId());
 

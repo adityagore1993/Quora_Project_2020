@@ -37,9 +37,4 @@ public class UserService {
         return userDao.deleteUserByUuid(userToDelete.getUuid());
 
     }
-
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes
