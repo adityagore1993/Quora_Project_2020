@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -59,9 +60,18 @@ public class UserDao {
         return userAuthTokenEntity;
     }
 
+    public UserAuthTokenEntity queryAuthToken(final String userAuthToken) {
+        try {
+            return entityManager.createNamedQuery("userAuthTokenByAccessToken", UserAuthTokenEntity.class).setParameter("accessToken", userAuthToken).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
     public void updateUser(final UserEntity updatedUserEntity) {
         entityManager.merge(updatedUserEntity);
     }
+
 
 
     public UserAuthTokenEntity getUserAuthToken(final String accessToken) throws SignOutRestrictedException {
@@ -130,4 +140,10 @@ public class UserDao {
 
         }
     }
+
+    public Boolean deleteUserByUuid (final String userUuid) {
+        return 1 == entityManager.createNamedQuery("deleteUserByUuid").setParameter("uuid", userUuid).executeUpdate();
+    }
+
+
 }
