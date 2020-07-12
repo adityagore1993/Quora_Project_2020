@@ -72,6 +72,7 @@ public class UserDao {
         entityManager.merge(updatedUserEntity);
     }
 
+<<<<<<< Updated upstream
 
 
     public UserAuthTokenEntity getUserAuthToken(final String accessToken) throws SignOutRestrictedException {
@@ -141,9 +142,14 @@ public class UserDao {
         }
     }
 
+=======
+>>>>>>> Stashed changes
     public Boolean deleteUserByUuid (final String userUuid) {
         return 1 == entityManager.createNamedQuery("deleteUserByUuid").setParameter("uuid", userUuid).executeUpdate();
     }
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 }

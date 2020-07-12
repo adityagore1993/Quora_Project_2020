@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,7 +41,7 @@ public class AnswerEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
-    private Question question;
+    private QuestionEntity question;
 
     public long getId() {
         return id;
@@ -81,11 +83,11 @@ public class AnswerEntity implements Serializable {
         this.user = user;
     }
 
-    public Question getQuestion() {
+    public QuestionEntity getQuestion() {
         return question;
     }
 
-    public void setQuestion(Question question) {
+    public void setQuestion(QuestionEntity question) {
         this.question = question;
     }
 
