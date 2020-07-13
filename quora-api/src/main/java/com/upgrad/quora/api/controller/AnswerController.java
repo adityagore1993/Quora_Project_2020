@@ -1,6 +1,10 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.*;
+import com.upgrad.quora.api.model.AnswerResponse;
+import com.upgrad.quora.api.model.AnswerEditResponse;
+import com.upgrad.quora.api.model.AnswerEditRequest;
+import com.upgrad.quora.api.model.AnswerDeleteResponse;
+import com.upgrad.quora.api.model.AnswerDetailsResponse;
 import com.upgrad.quora.service.business.AnswerBusinessService;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
