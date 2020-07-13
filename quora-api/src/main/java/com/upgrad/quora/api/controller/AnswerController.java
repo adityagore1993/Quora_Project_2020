@@ -1,6 +1,7 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.AnswerResponse;
+import com.upgrad.quora.api.model.AnswerRequest;
 import com.upgrad.quora.api.model.AnswerEditResponse;
 import com.upgrad.quora.api.model.AnswerEditRequest;
 import com.upgrad.quora.api.model.AnswerDeleteResponse;
