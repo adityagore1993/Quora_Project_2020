@@ -60,7 +60,7 @@ public class QuestionService {
         if(authTokenEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         } else if(authTokenEntity.getLogoutAt() != null) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user");
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get all questions");
         }
 
         return questionDao.getAllQuestions();
@@ -99,7 +99,7 @@ public class QuestionService {
 
             return updatedQuestion;
         } else {
-            throw new AuthorizationFailedException("ATHR-003", "Only the question owner or admin can delete the question");
+            throw new AuthorizationFailedException("ATHR-003", "Only the question owner can edit the question");
         }
 
 

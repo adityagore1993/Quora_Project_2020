@@ -39,7 +39,7 @@ public class AnswerBusinessService {
         if(authToken == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         } else if(authToken.getLogoutAt() != null) {
-            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post a question");
+            throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to post an answer");
         }
 
         //question check
@@ -72,7 +72,7 @@ public class AnswerBusinessService {
 
         AnswerEntity answerForEdit = answerDao.getAnswerByUuid(answerUuid);
         if(answerForEdit == null) {
-            throw new AnswerNotFoundException("ANS-001", "User is signed out.Sign in first to post an answer");
+            throw new AnswerNotFoundException("ANS-001", "Entered answer uuid does not exist");
         }
 
         UserEntity currentUser = authToken.getUser();
