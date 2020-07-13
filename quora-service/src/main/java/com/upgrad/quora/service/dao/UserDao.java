@@ -1,6 +1,5 @@
 package com.upgrad.quora.service.dao;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -44,12 +43,12 @@ public class UserDao {
 
     //Get user details by user UUID
     //Returns UserEntity
-    public UserEntity getUserById(final String uuid) throws UserNotFoundException {
+    public UserEntity getUserById(final String uuid) {
         try {
             return entityManager.createNamedQuery("userByUuid", UserEntity.class)
                     .setParameter("uuid", uuid).getSingleResult();
         } catch (NoResultException exc) {
-            throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+            return null;
         }
     }
 
@@ -72,31 +71,23 @@ public class UserDao {
         entityManager.merge(updatedUserEntity);
     }
 
-
-
-    public UserAuthTokenEntity getUserAuthToken(final String accessToken) throws SignOutRestrictedException {
-        try {
-            return entityManager.createNamedQuery("userAuthTokenByAccessToken", UserAuthTokenEntity.class)
-                    .setParameter("accessToken", accessToken).getSingleResult();
-        } catch (NoResultException exc) {
-            throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
-        }
-
-    }
-
     //Signout function
     //Returns UUID of the signed out user
     public String signOut(final String accessToken) throws SignOutRestrictedException {
-        UserAuthTokenEntity userAuthTokenEntity = entityManager.createNamedQuery("userByAccessToken", UserAuthTokenEntity.class)
-                .setParameter("accessToken", accessToken).getSingleResult();
-        final ZonedDateTime now = ZonedDateTime.now();
+        try{
+            UserAuthTokenEntity userAuthTokenEntity = entityManager.createNamedQuery("userByAccessToken", UserAuthTokenEntity.class)
+                    .setParameter("accessToken", accessToken).getSingleResult();
+            final ZonedDateTime now = ZonedDateTime.now();
 
-        Integer userId = userAuthTokenEntity.getUser().getId();
-        userAuthTokenEntity.setLogoutAt(now);
-        entityManager.merge(userAuthTokenEntity);
-        UserEntity userEntity = entityManager.createNamedQuery("userById", UserEntity.class)
-                .setParameter("id", userId).getSingleResult();
-        return userEntity.getUuid();
+            Integer userId = userAuthTokenEntity.getUser().getId();
+            userAuthTokenEntity.setLogoutAt(now);
+            entityManager.merge(userAuthTokenEntity);
+            UserEntity userEntity = entityManager.createNamedQuery("userById", UserEntity.class)
+                    .setParameter("id", userId).getSingleResult();
+            return userEntity.getUuid();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
     public boolean isRoleAdmin(final String accessToken) {

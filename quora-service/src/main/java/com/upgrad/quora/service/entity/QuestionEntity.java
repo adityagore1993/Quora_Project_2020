@@ -1,3 +1,5 @@
+
+
 package com.upgrad.quora.service.entity;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -8,47 +10,56 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.ZonedDateTime;
+import java.util.List;
+
+
+//Schema to Define attributes and relationship for Question table.
 
 @Entity
-@Table(name = "answer", schema = "public")
+@Table(name = "question", schema = "public")
 @NamedQueries({
-        @NamedQuery(name = "AnswerById", query = "SELECT a FROM AnswerEntity a WHERE a.id = :answerId"),
-        @NamedQuery(name = "AnswerByUuid", query = "SELECT a FROM AnswerEntity a WHERE a.uuid = :answerUuid"),
-        @NamedQuery(name = "AnswersByQuestionId", query = "SELECT a FROM AnswerEntity a WHERE a.question.id = :questionId"),
-        @NamedQuery(name = "DeleteAnswerByUuid", query = "DELETE FROM AnswerEntity a WHERE a.uuid = :uuid")
-})
-public class AnswerEntity implements Serializable {
-
+        @NamedQuery(name = "getAllQuestionsForUser", query = "select qt from QuestionEntity qt where qt.user.uuid=:uuid"),
+        @NamedQuery(name = "getAllQuestions", query = "select qt from QuestionEntity qt"),
+        @NamedQuery(name = "getQuestion", query = "select qt from QuestionEntity qt where qt.uuid=:uuid")
+}
+)
+public class QuestionEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     @Column(name = "uuid")
+    @Size(max = 200)
+    @NotNull
     private String uuid;
 
-    @Column(name = "ans")
-    private String answer;
+    @Column(name = "content")
+    @Size(max = 500)
+    @NotNull
+    private String content;
 
     @Column(name = "date")
-    private ZonedDateTime createdDate;
+    private ZonedDateTime date;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "question_id")
-    private QuestionEntity question;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "question")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<AnswerEntity> answers;
 
-    public long getId() {
+    // generated getter and setter methods for question table
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -60,20 +71,20 @@ public class AnswerEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getContent() {
+        return content;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public ZonedDateTime getCreatedDate() {
-        return createdDate;
+    public ZonedDateTime getDate() {
+        return date;
     }
 
-    public void setCreatedDate(ZonedDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setDate(ZonedDateTime date) {
+        this.date = date;
     }
 
     public UserEntity getUser() {
@@ -82,14 +93,6 @@ public class AnswerEntity implements Serializable {
 
     public void setUser(UserEntity user) {
         this.user = user;
-    }
-
-    public QuestionEntity getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(QuestionEntity question) {
-        this.question = question;
     }
 
     @Override
@@ -106,5 +109,5 @@ public class AnswerEntity implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
-
 }
+

@@ -35,7 +35,11 @@ public class AdminController {
 
     private String extractBearerToken (String authorizationHeader) {
         try {
-            return authorizationHeader.split("Bearer ")[1];
+            if(authorizationHeader != null && authorizationHeader.contains("Bearer ")) {
+                return authorizationHeader.split("Bearer ")[1];
+            } else {
+                return authorizationHeader;
+            }
         } catch (ArrayIndexOutOfBoundsException | NullPointerException excep) {
             return ""; // will we throw bad request here?
         }

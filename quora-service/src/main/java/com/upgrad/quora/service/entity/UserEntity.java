@@ -4,11 +4,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "users", schema = "public")
@@ -87,6 +90,14 @@ public class UserEntity implements Serializable {
     @NotNull
     @Size(max = 50)
     private String contactNumber;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<QuestionEntity> userQuestions;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<AnswerEntity> userAnswers;
 
 
     public Integer getId() {
@@ -193,6 +204,21 @@ public class UserEntity implements Serializable {
         this.salt = salt;
     }
 
+    public List<QuestionEntity> getUserQuestions() {
+        return userQuestions;
+    }
+
+    public void setUserQuestions(List<QuestionEntity> userQuestions) {
+        this.userQuestions = userQuestions;
+    }
+
+    public List<AnswerEntity> getUserAnswers() {
+        return userAnswers;
+    }
+
+    public void setUserAnswers(List<AnswerEntity> userAnswers) {
+        this.userAnswers = userAnswers;
+    }
 
     @Override
     public boolean equals(Object obj) {

@@ -90,7 +90,7 @@ public class AnswerController {
 
         String bearerToken = extractBearerToken(authorization);
 
-        List<AnswerEntity> listOfAnswers = service.getAllAnswersByQuestionUuid(questionId, authorization);
+        List<AnswerEntity> listOfAnswers = service.getAllAnswersByQuestionUuid(questionId, bearerToken);
 
         List<AnswerDetailsResponse> listOfResult = new ArrayList<AnswerDetailsResponse>();
 
@@ -112,7 +112,11 @@ public class AnswerController {
 
         try {
 
-            return authorizationCode.split("Bearer ")[1]; // will throw Index OOB exception
+            if(authorizationCode.contains("Bearer ")) {
+                return authorizationCode.split("Bearer ")[1]; // will throw Index OOB exception
+            } else {
+                return authorizationCode;
+            }
 
         } catch (NullPointerException | ArrayIndexOutOfBoundsException aib) {
             // missing authCode
