@@ -89,6 +89,7 @@ public class AnswerBusinessService {
 
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Boolean deleteAnswer(
             final String answerUuid, final String authCode
     ) throws AnswerNotFoundException, AuthorizationFailedException {

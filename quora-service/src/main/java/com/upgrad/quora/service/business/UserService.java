@@ -7,6 +7,8 @@ import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -16,6 +18,7 @@ public class UserService {
 
     final static String ADMIN_KEY_CODE = "admin";
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Boolean deleteUserByUuid(
             String uuid, String authorizationCode
     ) throws UserNotFoundException, AuthorizationFailedException {

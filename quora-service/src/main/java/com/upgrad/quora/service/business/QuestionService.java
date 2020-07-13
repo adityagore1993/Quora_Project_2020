@@ -156,7 +156,7 @@ public class QuestionService {
 
         UserEntity requestedUserContext = userDao.getUserById(uuid);
         if(requestedUserContext == null) {
-            throw new AuthorizationFailedException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
         }
 
         return questionDao.getAllQuestionsForUser(uuid);

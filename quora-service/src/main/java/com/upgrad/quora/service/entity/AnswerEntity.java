@@ -23,6 +23,7 @@ public class AnswerEntity implements Serializable {
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "uuid")

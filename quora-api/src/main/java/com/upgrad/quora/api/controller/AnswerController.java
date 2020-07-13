@@ -90,7 +90,7 @@ public class AnswerController {
 
         String bearerToken = extractBearerToken(authorization);
 
-        List<AnswerEntity> listOfAnswers = service.getAllAnswersByQuestionUuid(questionId, authorization);
+        List<AnswerEntity> listOfAnswers = service.getAllAnswersByQuestionUuid(questionId, bearerToken);
 
         List<AnswerDetailsResponse> listOfResult = new ArrayList<AnswerDetailsResponse>();
 

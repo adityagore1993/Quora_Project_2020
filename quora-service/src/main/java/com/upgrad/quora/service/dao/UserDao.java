@@ -43,12 +43,12 @@ public class UserDao {
 
     //Get user details by user UUID
     //Returns UserEntity
-    public UserEntity getUserById(final String uuid) throws UserNotFoundException {
+    public UserEntity getUserById(final String uuid) {
         try {
             return entityManager.createNamedQuery("userByUuid", UserEntity.class)
                     .setParameter("uuid", uuid).getSingleResult();
         } catch (NoResultException exc) {
-            throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
+            return null;
         }
     }
 

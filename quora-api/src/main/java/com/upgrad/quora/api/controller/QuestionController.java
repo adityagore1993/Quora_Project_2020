@@ -59,7 +59,7 @@ public class QuestionController {
     }
 
     @RequestMapping(value = "/question/all/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions (
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser (
             @PathVariable("userId") final String userUuid,
             @RequestHeader("authorization") final String authorizationHeader
     ) throws AuthorizationFailedException, UserNotFoundException {
@@ -84,7 +84,7 @@ public class QuestionController {
         final QuestionEntity questionAfterEdit = questionService.editQuestionContent(questionUuid, editRequest.getContent(), bearerToken);
 
         return new ResponseEntity<>(
-                new QuestionEditResponse().id(questionAfterEdit.getUuid()).status("ANSWER EDITED"),
+                new QuestionEditResponse().id(questionAfterEdit.getUuid()).status("QUESTION EDITED"),
                 HttpStatus.OK
         );
 
